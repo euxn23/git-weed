@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"math/rand"
 	"time"
 
 	"github.com/motemen/go-gitconfig"
@@ -21,7 +23,19 @@ func Action(_ *cli.Context) error {
 		return err
 	}
 
-	committedAt := editTimestamp()
+	headHash, err := r.Head()
+	if err != nil {
+		return err
+	}
+	headCommit, err := r.CommitObject(headHash.Hash())
+	if err != nil {
+		return err
+	}
+
+	committedAt, err := editTimestamp(headCommit)
+	if err != nil {
+		return err
+	}
 
 	userName, err := gitconfig.Default.GetString("user.name")
 	if err != nil {
@@ -48,10 +62,14 @@ func Action(_ *cli.Context) error {
 	return nil
 }
 
-func editTimestamp() time.Time {
+func editTimestamp(head *object.Commit) (time.Time, error) {
 	committedAt := time.Now()
 	if random {
-		// TODO
+		randMax := time.Now().Unix() - head.Author.When.Unix()
+		if randMax < 0 {
+			return committedAt, errors.New("HEAD is future commit.")
+		}
+		committedAt = time.Unix(time.Now().Unix() - rand.Int63n(randMax), 0)
 	}
 
 	if year == 0 {
@@ -79,5 +97,5 @@ func editTimestamp() time.Time {
 	committedAt = committedAt.Add(-time.Minute * time.Duration(minutesAgo))
 	committedAt = committedAt.Add(-time.Second * time.Duration(secondsAgo))
 
-	return committedAt
+	return committedAt, nil
 }
