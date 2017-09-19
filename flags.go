@@ -40,7 +40,7 @@ var Flags = []cli.Flag{
 	},
 	cli.BoolFlag{
 		Name: "random, r",
-		Usage: "Generate random time after HEAD, before than now. (Overwrites other options.)",
+		Usage: "Generate random time after HEAD, before than now.",
 		Destination: &random,
 	},
 
