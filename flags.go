@@ -7,6 +7,7 @@ import (
 var (
 	commitMessage string
 
+	strict bool
 	random bool
 
 	year int
@@ -32,6 +33,11 @@ var Flags = []cli.Flag{
 		Destination: &commitMessage,
 	},
 
+	cli.BoolFlag{
+		Name: "strict, s",
+		Usage: "Not allow future commit.",
+		Destination: &strict,
+	},
 	cli.BoolFlag{
 		Name: "random, r",
 		Usage: "Generate random time after HEAD, before than now. (Overwrites other options.)",

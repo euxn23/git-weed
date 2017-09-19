@@ -97,5 +97,9 @@ func editTimestamp(head *object.Commit) (time.Time, error) {
 	committedAt = committedAt.Add(-time.Minute * time.Duration(minutesAgo))
 	committedAt = committedAt.Add(-time.Second * time.Duration(secondsAgo))
 
+	if strict && committedAt.After(time.Now()) {
+		return time.Now(), errors.New("Not allow future commit: " + committedAt.String())
+	}
+
 	return committedAt, nil
 }
