@@ -46,7 +46,7 @@ func Action(_ *cli.Context) error {
 		return err
 	}
 
-	w.Commit(commitMessage, &git.CommitOptions{
+	_, err = w.Commit(commitMessage, &git.CommitOptions{
 		Committer: &object.Signature{
 			Name:  userName,
 			Email: userEmail,
@@ -58,6 +58,9 @@ func Action(_ *cli.Context) error {
 			When:  committedAt,
 		},
 	})
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
