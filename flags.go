@@ -6,6 +6,7 @@ import (
 
 var (
 	commitMessage string
+	amend bool
 
 	strict bool
 	random bool
@@ -32,6 +33,11 @@ var Flags = []cli.Flag{
 		Usage: "commit message",
 		Destination: &commitMessage,
 	},
+	//cli.BoolFlag{
+	//	Name: "amend",
+	//	Usage: "amend previous commit",
+	//	Destination: &amend,
+	//},
 
 	cli.BoolFlag{
 		Name: "strict, s",

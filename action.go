@@ -32,27 +32,46 @@ func Action(_ *cli.Context) error {
 		return err
 	}
 
-	committedAt, err := editTimestamp(headCommit)
-	if err != nil {
-		return err
-	}
+	var userName string
+	var userEmail string
+	var committedAt time.Time
 
-	userName, err := gitconfig.Default.GetString("user.name")
-	if err != nil {
-		return err
-	}
-	userEmail, err := gitconfig.Default.GetString("user.email")
-	if err != nil {
-		return err
-	}
+	if amend {
+		userName = headCommit.Author.Name
+		userEmail = headCommit.Author.Email
+		committedAt, err = editTimestamp(headCommit.Author.When, headCommit)
+		if err != nil {
+			return err
+		}
 
+		err = w.Reset(&git.ResetOptions{
+			Mode: git.SoftReset,
+			Commit: headCommit.Hash,
+		})
+		if err != nil {
+			return err
+		}
+	} else {
+		userName, err = gitconfig.Default.GetString("user.name")
+		if err != nil {
+			return err
+		}
+		userEmail, err = gitconfig.Default.GetString("user.email")
+		if err != nil {
+			return err
+		}
+		committedAt, err = editTimestamp(time.Now(), headCommit)
+		if err != nil {
+			return err
+		}
+	}
 	_, err = w.Commit(commitMessage, &git.CommitOptions{
-		Committer: &object.Signature{
+		Author: &object.Signature{
 			Name:  userName,
 			Email: userEmail,
 			When:  committedAt,
 		},
-		Author: &object.Signature{
+		Committer: &object.Signature{
 			Name:  userName,
 			Email: userEmail,
 			When:  committedAt,
@@ -65,8 +84,7 @@ func Action(_ *cli.Context) error {
 	return nil
 }
 
-func editTimestamp(head *object.Commit) (time.Time, error) {
-	committedAt := time.Now()
+func editTimestamp(committedAt time.Time, head *object.Commit) (time.Time, error) {
 	if random {
 		randMax := time.Now().Unix() - head.Author.When.Unix()
 		if randMax < 0 {
