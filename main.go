@@ -6,7 +6,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-
 func main() {
 	newApp().Run(os.Args)
 }
