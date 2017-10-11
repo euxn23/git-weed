@@ -4,10 +4,14 @@ import (
 	"os"
 
 	"github.com/urfave/cli"
+	"log"
 )
 
 func main() {
-	newApp().Run(os.Args)
+	err := newApp().Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func newApp() *cli.App {
