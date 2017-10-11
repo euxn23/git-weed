@@ -22,13 +22,17 @@ func Action(_ *cli.Context) error {
 		return err
 	}
 
+	var headCommit *object.Commit
+	var headCommittedAt time.Time
 	headHash, err := r.Head()
 	if err != nil {
-		return err
-	}
-	headCommit, err := r.CommitObject(headHash.Hash())
-	if err != nil {
-		return err
+		headCommittedAt = time.Now()
+	} else {
+		headCommit, err = r.CommitObject(headHash.Hash())
+		if err != nil {
+			return err
+		}
+		headCommittedAt = headCommit.Author.When
 	}
 
 	var userName string
@@ -36,9 +40,12 @@ func Action(_ *cli.Context) error {
 	var committedAt time.Time
 
 	if amend {
+		if headCommit == nil {
+			return errors.New("There is no existing commit.")
+		}
 		userName = headCommit.Author.Name
 		userEmail = headCommit.Author.Email
-		committedAt, err = editTimestamp(headCommit.Author.When, headCommit)
+		committedAt, err = editTimestamp(headCommittedAt, headCommittedAt)
 		if err != nil {
 			return err
 		}
@@ -59,7 +66,7 @@ func Action(_ *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		committedAt, err = editTimestamp(time.Now(), headCommit)
+		committedAt, err = editTimestamp(time.Now(), headCommittedAt)
 		if err != nil {
 			return err
 		}
@@ -83,9 +90,9 @@ func Action(_ *cli.Context) error {
 	return nil
 }
 
-func editTimestamp(committedAt time.Time, head *object.Commit) (time.Time, error) {
+func editTimestamp(committedAt, headCommittedAt time.Time) (time.Time, error) {
 	if random {
-		randMax := time.Now().Unix() - head.Author.When.Unix()
+		randMax := time.Now().Unix() - headCommittedAt.Unix()
 		if randMax < 0 {
 			return committedAt, errors.New("HEAD is future commit.")
 		}
