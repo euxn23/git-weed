@@ -92,7 +92,7 @@ func Action(_ *cli.Context) error {
 
 func editTimestamp(committedAt, headCommittedAt time.Time) (time.Time, error) {
 	if random {
-		randMax := time.Now().Unix() - headCommittedAt.Unix()
+		var randMax int64 = time.Now().Unix() - headCommittedAt.Unix()
 		if randMax < 0 {
 			return committedAt, errors.New("HEAD is future commit.")
 		} else if randMax > 0 {
