@@ -100,22 +100,22 @@ func editTimestamp(committedAt, headCommittedAt time.Time) (time.Time, error) {
 		}
 	}
 
-	if year == 0 {
+	if year < 1 {
 		year = committedAt.Year()
 	}
-	if month == 0 {
+	if month < 1 {
 		month = int(committedAt.Month())
 	}
-	if day == 0 {
+	if day < 1 {
 		day = committedAt.Day()
 	}
-	if hour == 0 {
+	if hour < 0 {
 		hour = committedAt.Hour()
 	}
-	if minute == 0 {
+	if minute < 0 {
 		minute = committedAt.Minute()
 	}
-	if second == 0 {
+	if second < 0 {
 		second = committedAt.Second()
 	}
 	committedAt = time.Date(year, time.Month(month), day, hour, minute, second, 0, committedAt.Location())

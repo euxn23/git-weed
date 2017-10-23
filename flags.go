@@ -68,16 +68,19 @@ var Flags = []cli.Flag{
 		Name:        "hour",
 		Usage:       "The hour.",
 		Destination: &hour,
+		Value:       -1,
 	},
 	cli.IntFlag{
 		Name:        "minute",
 		Usage:       "The minute.",
 		Destination: &minute,
+		Value:       -1,
 	},
 	cli.IntFlag{
 		Name:        "second",
 		Usage:       "The second.",
 		Destination: &second,
+		Value:       -1,
 	},
 
 	cli.IntFlag{
