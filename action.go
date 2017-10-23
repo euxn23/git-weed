@@ -95,8 +95,9 @@ func editTimestamp(committedAt, headCommittedAt time.Time) (time.Time, error) {
 		randMax := time.Now().Unix() - headCommittedAt.Unix()
 		if randMax < 0 {
 			return committedAt, errors.New("HEAD is future commit.")
+		} else if randMax > 0 {
+			committedAt = time.Unix(time.Now().Unix()-rand.Int63n(randMax), 0)
 		}
-		committedAt = time.Unix(time.Now().Unix()-rand.Int63n(randMax), 0)
 	}
 
 	if year == 0 {
